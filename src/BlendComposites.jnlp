@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp spec="1.0+" codebase="http://www.progx.org/users/Gfx/apps" href="BlendComposites.jnlp">
+  <information>
+    <title>Blending Modes</title>
+
+    <vendor>Romain Guy</vendor>
+    <homepage href="http://www.jroller.com/page/gfx" />
+
+    <description>New blending modes for Java.</description>
+
+    <offline-allowed />
+  </information>
+
+  <resources>
+    <j2se version="1.5+" />
+    <jar href="BlendComposites.jar" />
+  </resources>
+
+  <application-desc main-class="composite.CompositesTestFrame" />
+</jnlp>
+
