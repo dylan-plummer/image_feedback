@@ -2,6 +2,13 @@
 A video feedback simulator in Java.
 
 
+The code outputs an image for each iteration creating a video showing the creation of each pattern.
+A demonstration of this can be found [here](https://www.youtube.com/watch?v=t4KPOMTTe6k)
+
+
+
+
+
 ![alt tag](https://github.com/jumproper/image_feedback/blob/master/preview/1.png)
 
 
