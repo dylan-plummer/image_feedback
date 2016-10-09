@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.SourceTree;
 import javafx.scene.effect.BlendMode;
 
 import javax.imageio.ImageIO;
@@ -10,6 +11,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static java.awt.Color.black;
@@ -21,11 +23,20 @@ import static java.awt.Color.white;
  */
 public class Main {
     public static void main(String args[]) throws Exception {
+        ArrayList<BufferedImage> sequence = new ArrayList<>();
+        String path;
+        for(int j=0;j<500;j++){
+            path="C:\\tmp\\Feedback\\Input\\test_"+String.format("%06d", j)+".png";
+            if(j%10==0) {
+                System.out.println((100 * (j / 500.0) + "%"));
+            }
+            sequence.add(ImageIO.read(new File(path)));
+        }
         BufferedImage img = ImageIO.read(new File("image.png"));
-        BufferedImage output=copyImage(img);
+        BufferedImage output=copyImage(sequence.get(0));
         int iter=1000;
         int rand=(int)(Math.random()*1000);
-        feedback(img,output,iter,0,rand);
+        feedbackSequence(sequence,output,0,rand);
         File outputfile = new File("output.jpg");
         ImageIO.write(output, "png", outputfile);
     }
@@ -58,6 +69,40 @@ public class Main {
             e.printStackTrace();
         }
         return feedback(img,output,iter,(j+1),rand);
+    }
+    public static BufferedImage feedbackSequence(ArrayList<BufferedImage> img, BufferedImage output,int j, int rand){
+        if(j==img.size()){
+            return output;
+        }
+        int w=img.get(j).getWidth();
+        int h=img.get(j).getHeight();
+        int iter=img.size();
+        System.out.println("j="+j);
+        double scale=1.0-getAngleCoefficient(iter,j,8,true)*(0.5+j)/iter;
+        if((int)(w*scale)==0||(int)(h*scale)==0){
+            return output;
+        }
+        BufferedImage temp=copyImage(img.get(j));
+        AffineTransform at = new AffineTransform();
+        at.translate(w/2+5,h/2-5);
+        at.scale(scale,scale);
+        at.rotate(Math.PI/4/iter*j);
+
+        at.translate(-w/2,-h/2);
+        AffineTransformOp scaleOp =
+                new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        temp=scaleOp.filter(output,temp);
+        Graphics2D g2=output.createGraphics();
+        g2.drawImage(temp,0,0,null);
+        mirrorImage(output,false,rand);
+        mirrorImage(output,true,rand);
+        File outputfile = new File("C:\\tmp\\Feedback\\"+j+".png");
+        try {
+            ImageIO.write(output, "png", outputfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return feedbackSequence(img,output,(j+1),rand);
     }
     public static double getAngleCoefficient(int iter,int j,int max, boolean inverse){
         if(inverse){
